@@ -1,72 +1,41 @@
 import './charInfo.scss';
-import { Component } from 'react';
-import MarvelService from '../../services/marvelService';
+import { useState, useEffect } from 'react';
+import useMarvelService from '../../services/marvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import Skeleton from '../skeleton/Skeleton';
 import PropTypes from 'prop-types';
 
-class CharInfo extends Component {
+const CharInfo = (props) => {
     
-    state = {
-        char: null,
-        loading: false,
-        error: false
-    }
 
-    MarvelService = new MarvelService();
+    const [char, setChar] = useState(null);
 
-    componentDidMount() {
-        this.updateChar();
-    }
+    const {getOneCharacter, loading, error, clearError} = useMarvelService();
 
-    componentDidUpdate(prevProps) {
-        if (this.props.charId !== prevProps.charId) {
-            this.updateChar();
-            console.log('CharList updated')
-        }
-    }
 
-    updateChar = () => {
-        const {charId} = this.props;
-        if(!charId) {
+    useEffect(() => {
+        updateChar();
+    }, [props.charId])
+
+
+
+    const updateChar = () => {
+        const {charId} = props;
+        if (!charId) {
             return;
         }
-        this.onCharLoading();
-        this.MarvelService
-            .getOneCharacter(charId)
-            .then(this.onCharLoaded)
-            .catch(this.onError)
 
+        clearError();
+        getOneCharacter(charId)
+            .then(onCharLoaded)
     }
 
-    onCharLoading() {
-        this.setState({
-            loading: true,
-            error: false
-        })
+    const onCharLoaded = (char) => {
+        setChar(char);
     }
 
-    onCharLoaded = (char) => {
-        this.setState({
-            char, 
-            loading: false,
-            error: false
-        });
-    }
-    onError = () => {
-        this.setState({
-            loading: false,
-            error: true
-        })
-    }
 
-    static defaultProps = {
-        charId: 110111
-    }
-
-    render() {
-        const {char, loading, error} = this.state;
         const skeleton = (char || loading || error)? null : <Skeleton/>;
         const isLoading =  loading? <Spinner/>: null;
         const isError =  error? <ErrorMessage/>: null;
@@ -79,7 +48,6 @@ class CharInfo extends Component {
                 {finalElements}
             </div>
         )
-    }
 
 
 }

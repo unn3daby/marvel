@@ -2,43 +2,39 @@ import AppHeader from "../appHeader/AppHeader";
 import RandomChar from "../randomChar/RandomChar";
 import CharList from "../charList/CharList";
 import CharInfo from "../charInfo/CharInfo";
-import { Component } from "react";
+import { useState } from "react";
 import decoration from '../../resources/img/vision.png';
 import ErrorBoundary from "../errorBoundary/ErrorBoundary";
 
-class App extends Component {
+const App = () => {
 
-    state = {
-        selectedChar: null
-    }    
+    const [selectedChar, setChar] = useState(null);
 
-    onCharSelected = (id) => {
-        this.setState({
-            selectedChar: id
-        })
+    const onCharSelected = (id) => {
+        console.log('on char selected')
+        setChar(id);
     }
 
-    render() {
-        return (
-            <div className="app">
-                <AppHeader/>
-                <ErrorBoundary>
-                    <RandomChar/>
-                </ErrorBoundary>
-                <main>
-                    <div className="char__content">
-                        <ErrorBoundary>
-                            <CharList onCharSelected = {this.onCharSelected}/>
-                        </ErrorBoundary>
-                        <ErrorBoundary>
-                            <CharInfo charId={this.state.selectedChar}/>
-                        </ErrorBoundary>
-                    </div>
-                    <img className="bg-decoration" src={decoration} alt="vision"/>
-                </main>
-            </div>
-        )
-    }
+    return (
+        <div className="app">
+            <AppHeader/>
+            <ErrorBoundary>
+                <RandomChar/>
+            </ErrorBoundary>
+            <main>
+                <div className="char__content">
+                    <ErrorBoundary>
+                        <CharList onCharSelected = {onCharSelected}/>
+                    </ErrorBoundary>
+                    <ErrorBoundary>
+                        <CharInfo charId={selectedChar}/>
+                    </ErrorBoundary>
+                </div>
+                <img className="bg-decoration" src={decoration} alt="vision"/>
+            </main>
+        </div>
+    );
+
 }
 
 export default App;
