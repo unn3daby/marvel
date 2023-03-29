@@ -7,6 +7,7 @@
         grid-template-columns: repeat(auto-fill, 225px);
         justify-content: space-between;
         row-gap: 55px;
+        margin-top: 45px;
     }
     &__item {
         transition: 0.3s transform;
@@ -33,4 +34,7 @@
             transform: translateY(-5px);
         }
     }
+}
+.spinner {
+    margin-top: 100px;
 }
