@@ -12,7 +12,7 @@ import ErrorMessage from '../errorMessage/ErrorMessage';
 const ComicsList = (props) => {
     const [char, setChar] = useState([]);
     const [offset, setOffset] = useState(123);
-    const [IsCharacterEnded, setIsCharacterEnded] = useState(false);
+    const [isCharacterEnded, setIsCharacterEnded] = useState(false);
     const [newItemLodaing, setNewItemLodaing] = useState(false);
 
 
@@ -35,16 +35,40 @@ const ComicsList = (props) => {
         setIsCharacterEnded(checker);
     }
 
+    const scrollFunc = () => {
+        let fOffset = offset + 8;
+        console.log('event')
+        return () => {
+            if(document.body.scrollHeight <= window.innerHeight + document.documentElement.scrollTop) {
+                if(isCharacterEnded) {
+                    window.removeEventListener('scroll', scrollFunc);
+                }
+                else if (loading) {
+                    console.log('loading')
+                }
+                else {
+                    onRequest(fOffset);
+                    fOffset += 8;
+                }
+            }
+        }
+    }
+
     useEffect(() => {
+        window.addEventListener('scroll', scrollFunc());
         onRequest(offset, true);
+        
+        return () => {
+            window.removeEventListener('scroll', scrollFunc());
+        }
     }, [])
 
 
     const charElements = char.map((item,i) => {
         return(
-            <li key = {item.id} className="comics__item">
+            <li key = {i} className="comics__item">
                 <a href="#">
-                    <img src={item.thumbnail} alt="" className="comics__item-img"/>
+                    <img src={item.thumbnail} alt={item.title} className="comics__item-img"/>
                     <div className="comics__item-name">{item.title}</div>
                     <div className="comics__item-price">{item.price}</div>
                 </a>
@@ -54,8 +78,7 @@ const ComicsList = (props) => {
 
     const isloading = (loading && !newItemLodaing)?<Spinner/>:null;
     const isError = error?<ErrorMessage/>:null;
-    const finalElements = (loading || error)?null:charElements;
-
+   
     return (
         <div className="comics__list">
            <AppBanner/>
@@ -65,7 +88,7 @@ const ComicsList = (props) => {
                 {charElements}
             </ul>
             <button  
-                style={{'display': IsCharacterEnded?'none':'block'}} 
+                style={{'display': isCharacterEnded?'none':'block'}} 
                 disabled = {newItemLodaing} 
                 onClick={() => onRequest(offset)} 
                 className="button button__main button__long">
