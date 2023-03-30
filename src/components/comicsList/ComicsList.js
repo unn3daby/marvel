@@ -64,7 +64,7 @@ const ComicsList = (props) => {
     }, [])
 
 
-    const charElements = char.map((item,i) => {
+    const comicsElements = char.map((item,i) => {
         return(
             <li key = {i} className="comics__item">
                 <a href="#">
@@ -85,7 +85,7 @@ const ComicsList = (props) => {
            {isloading}
            {isError}
             <ul className="comics__grid">
-                {charElements}
+                {comicsElements}
             </ul>
             <button  
                 style={{'display': isCharacterEnded?'none':'block'}} 
