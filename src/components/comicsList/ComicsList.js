@@ -11,10 +11,11 @@ import ErrorMessage from '../errorMessage/ErrorMessage';
 
 const ComicsList = (props) => {
     const [char, setChar] = useState([]);
-    const [offset, setOffset] = useState(123);
+    const [offset, setOffset] = useState(134);
     const [isCharacterEnded, setIsCharacterEnded] = useState(false);
     const [newItemLodaing, setNewItemLodaing] = useState(false);
 
+    //console.log('offset from state',offset);
 
     const {getAllComics, loading, error} = useMarvelService();
 
@@ -36,30 +37,29 @@ const ComicsList = (props) => {
     }
 
     const scrollFunc = () => {
-        let fOffset = offset + 8;
-        console.log('event')
-        return () => {
-            if(document.body.scrollHeight <= window.innerHeight + document.documentElement.scrollTop) {
-                if(isCharacterEnded) {
-                    window.removeEventListener('scroll', scrollFunc);
-                }
-                else if (loading) {
-                    console.log('loading')
-                }
-                else {
-                    onRequest(fOffset);
-                    fOffset += 8;
-                }
+        if(document.body.scrollHeight <= window.innerHeight + document.documentElement.scrollTop) {
+            if(isCharacterEnded) {
+                window.removeEventListener('scroll', scrollFunc);
             }
-        }
+            else if (loading) {
+                console.log('loading')
+            }
+            else {
+                console.log(offset);
+                onRequest(offset);
+            }
+        }   
     }
 
     useEffect(() => {
-        window.addEventListener('scroll', scrollFunc());
         onRequest(offset, true);
+        if(!loading) {
+            window.addEventListener('scroll', scrollFunc);
+        }
+
         
         return () => {
-            window.removeEventListener('scroll', scrollFunc());
+            window.removeEventListener('scroll', scrollFunc);
         }
     }, [])
 
