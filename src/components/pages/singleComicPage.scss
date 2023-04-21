@@ -1,6 +1,9 @@
 @import '../../style/variables.scss';
-
+.spinner {
+    margin-top: 40px;
+}
 .single-comic {
+
     margin-top: 50px;
     display: grid;
     grid-template-columns: 293px 550px auto;
@@ -36,4 +39,5 @@
             color: $main-color;
         }
     }
+
 }

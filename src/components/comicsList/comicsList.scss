@@ -1,6 +1,9 @@
 .comics {
     &__list {
         margin-top: 45px;
+        .spinner {
+            margin-top: 100px;
+        }
     }
     &__grid {
         display: grid;
@@ -35,6 +38,17 @@
         }
     }
 }
-.spinner {
-    margin-top: 100px;
+.comic-enter {
+    opacity: 0;
+}
+.comic-enter-active {
+    opacity: 1;
+    transition: opacity 600ms;
+}
+.comic-exit {
+    opacity: 1;
+}
+.comic-exit-active {
+    opacity: 0;
+    transition: opacity 600ms;
 }

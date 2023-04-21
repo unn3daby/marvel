@@ -1,6 +1,7 @@
 import './charList.scss';
 import useMarvelService from '../../services/marvelService';
 import { useState, useEffect, useRef } from 'react';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import PropTypes  from 'prop-types';
@@ -68,24 +69,25 @@ const CharList = (props) => {
             imgStyle = {'objectFit' : 'unset'};
         }
         return(
-            <li 
-            key = {item.id}
-            tabIndex = "0" 
-            onClick = {(e) => {
-                props.onCharSelected(item.id);
-                onFocus(i);
-            }}
-            onKeyDown = {(e) => {
-                if(e.key === 'Enter') {
-                    onSelectedKey(i)
+            <CSSTransition classNames = "card" timeout={600} key = {item.id}>
+                <div 
+                tabIndex = "0" 
+                onClick = {(e) => {
                     props.onCharSelected(item.id);
-                }
-            }} 
-            ref = {el => itemRefs.current[i] = el}
-            className="char__item">
-                <img src={item.thumbnail} style = {imgStyle} alt="abyss"/>
-                <div className="char__name">{item.name}</div>
-            </li>
+                    onFocus(i);
+                }}
+                onKeyDown = {(e) => {
+                    if(e.key === 'Enter') {
+                        onSelectedKey(i)
+                        props.onCharSelected(item.id);
+                    }
+                }} 
+                ref = {el => itemRefs.current[i] = el}
+                className="char__item">
+                    <img src={item.thumbnail} style = {imgStyle} alt="abyss"/>
+                    <div className="char__name">{item.name}</div>
+                </div>
+            </CSSTransition>
         );
         
     })
@@ -99,9 +101,10 @@ const CharList = (props) => {
         <div className="char__list">
             {isloading}
             {isError}
-            <ul className="char__grid">
-                {charElements}
-            </ul>
+            <TransitionGroup className='char__grid'>
+                 {charElements}
+            </TransitionGroup>
+           
             <button 
             className="button button__main button__long"
             disabled={newItemLodaing}

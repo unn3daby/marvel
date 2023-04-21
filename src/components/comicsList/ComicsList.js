@@ -1,7 +1,7 @@
 import './comicsList.scss';
 import { useState, useEffect, useRef } from 'react';
-import uw from '../../resources/img/UW.png';
-import xMen from '../../resources/img/x-men.png';
+import { Link } from 'react-router-dom';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import AppBanner from '../appBanner/AppBanner';
 import useMarvelService from '../../services/marvelService';
 import Spinner from '../spinner/Spinner';
@@ -15,15 +15,21 @@ const ComicsList = (props) => {
     const [isCharacterEnded, setIsCharacterEnded] = useState(false);
     const [newItemLodaing, setNewItemLodaing] = useState(false);
 
-    //console.log('offset from state',offset);
+    const {getAllComics, loading, error, clearError} = useMarvelService();
 
-    const {getAllComics, loading, error} = useMarvelService();
+    const offsetRef = useRef(offset);
+
+    useEffect(() => {
+        offsetRef.current = offset;
+      }, [offset]);
 
     const onRequest = (offset, initial) => {
         initial?setNewItemLodaing(false):setNewItemLodaing(true);
+        clearError();
         getAllComics(offset)
             .then(onAllComicsLoaded)
     }
+
 
     const onAllComicsLoaded = (res) => {
         let checker = false;
@@ -32,31 +38,24 @@ const ComicsList = (props) => {
         }
         setChar(char => ([...char, ...res]));
         setNewItemLodaing(false);
+        console.log('offset +=8')
         setOffset(offset => offset + 8);
         setIsCharacterEnded(checker);
+
     }
 
     const scrollFunc = () => {
-        if(document.body.scrollHeight <= window.innerHeight + document.documentElement.scrollTop) {
-            if(isCharacterEnded) {
-                window.removeEventListener('scroll', scrollFunc);
-            }
-            else if (loading) {
-                console.log('loading')
-            }
-            else {
-                console.log(offset);
-                onRequest(offset);
-            }
+        if(!newItemLodaing && !isCharacterEnded && document.body.scrollHeight - document.documentElement.clientHeight <= document.documentElement.scrollTop) {
+            onRequest(offsetRef.current);
         }   
+        if(isCharacterEnded) {
+            window.removeEventListener('scroll', scrollFunc);
+        }
     }
 
     useEffect(() => {
+        window.addEventListener('scroll', scrollFunc);
         onRequest(offset, true);
-        if(!loading) {
-            window.addEventListener('scroll', scrollFunc);
-        }
-
         
         return () => {
             window.removeEventListener('scroll', scrollFunc);
@@ -66,13 +65,15 @@ const ComicsList = (props) => {
 
     const comicsElements = char.map((item,i) => {
         return(
-            <li key = {i} className="comics__item">
-                <a href="#">
-                    <img src={item.thumbnail} alt={item.title} className="comics__item-img"/>
-                    <div className="comics__item-name">{item.title}</div>
-                    <div className="comics__item-price">{item.price}</div>
-                </a>
-            </li>
+            <CSSTransition classNames = 'comic' timeout = {600} key = {i}>
+                <li  className="comics__item">
+                    <Link to={`/comics/${item.id}`}>
+                        <img src={item.thumbnail} alt={item.title} className="comics__item-img"/>
+                        <div className="comics__item-name">{item.title}</div>
+                        <div className="comics__item-price">{item.price}$</div>
+                    </Link>
+                </li>
+            </CSSTransition>
         );
     })
 
@@ -84,8 +85,10 @@ const ComicsList = (props) => {
            <AppBanner/>
            {isloading}
            {isError}
-            <ul className="comics__grid">
-                {comicsElements}
+            <ul className='comics__grid'>
+                <TransitionGroup component={null}>
+                        {comicsElements}
+                </TransitionGroup>
             </ul>
             <button  
                 style={{'display': isCharacterEnded?'none':'block'}} 

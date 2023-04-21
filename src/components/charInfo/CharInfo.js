@@ -5,12 +5,12 @@ import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import Skeleton from '../skeleton/Skeleton';
 import PropTypes from 'prop-types';
-
+import { Link } from 'react-router-dom';
 const CharInfo = (props) => {
     
 
     const [char, setChar] = useState(null);
-
+    console.log(props.charId)
     const {getOneCharacter, loading, error, clearError} = useMarvelService();
 
 
@@ -46,6 +46,7 @@ const CharInfo = (props) => {
                 {isLoading}
                 {isError}
                 {finalElements}
+                
             </div>
         )
 
@@ -88,7 +89,9 @@ const View = (char) => {
                     comics.map((item, i) => {
                         if (i < 10) 
                             return (
-                                <li key = {i} className='char__comics-item'>{item.name}</li>
+                                <li key = {i} className='char__comics-item'>
+                                    <Link to= {`/comics/${item.resourceURI.substr(-5).replace(/[\s]/g,'')}`}>{item.name}</Link>
+                                </li>
                             );
                         else 
                         // eslint-disable-next-line
